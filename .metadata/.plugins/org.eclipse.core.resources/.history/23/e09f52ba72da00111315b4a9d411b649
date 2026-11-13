@@ -1,0 +1,5 @@
+package com.alpha.theaterService.controller;
+
+public class AppController {
+
+}

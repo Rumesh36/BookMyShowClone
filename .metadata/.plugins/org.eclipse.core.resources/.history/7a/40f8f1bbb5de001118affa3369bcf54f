@@ -1,0 +1,22 @@
+package com.alpha.theaterService.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class Adress {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int id;
+	private String address;
+	
+	public Adress(String address) {
+		super();
+		this.address = address;
+	}
+	
+	
+}
