@@ -13,7 +13,7 @@ public class Movie {
 	private long id;
 	private String title;
 	private String description;
-	private String cast;
+	private String moviecast;
 	private double duration;
 	private String languages;
 	
@@ -21,11 +21,11 @@ public class Movie {
 		super();
 	}
 
-	public Movie(String title, String description, String cast, double duration, String languages) {
+	public Movie(String title, String description, String moviecast, double duration, String languages) {
 		super();
 		this.title = title;
 		this.description = description;
-		this.cast = cast;
+		this.moviecast= moviecast;
 		this.duration = duration;
 		this.languages = languages;
 	}
@@ -55,11 +55,11 @@ public class Movie {
 	}
 
 	public String getCast() {
-		return cast;
+		return moviecast;
 	}
 
-	public void setCast(String cast) {
-		this.cast = cast;
+	public void setCast(String moviecast) {
+		this.moviecast = moviecast;
 	}
 
 	public double getDuration() {
