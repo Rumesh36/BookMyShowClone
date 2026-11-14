@@ -1,10 +1,13 @@
 package com.alpha.theaterService.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alpha.theaterService.dto.CreateTheaterDto;
+import com.alpha.theaterService.dto.ResponseStructure;
 import com.alpha.theaterService.entity.Theater;
 import com.alpha.theaterService.service.Theaterservice;
 @RestController
@@ -14,10 +17,9 @@ public class AppController {
     private Theaterservice tser;
 
     @PostMapping("/theater/createAccount")
-    public void create(@RequestBody Theater t) {
+    public ResponseEntity<ResponseStructure<Theater>> create(
+            @RequestBody CreateTheaterDto t) {
 
-        tser.createAccount(t);
-
-        System.out.println("Theater Registered");
+        return tser.createTheaterAccount(t);
     }
 }
