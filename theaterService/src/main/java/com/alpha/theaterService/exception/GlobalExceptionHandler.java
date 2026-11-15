@@ -19,5 +19,36 @@ public class GlobalExceptionHandler {
 		
 		return new ResponseEntity<ResponseStructure<String>>(rs,HttpStatus.CONFLICT);
 	}
+	@ExceptionHandler(TheaterNotExistException.class)
+	public ResponseEntity<ResponseStructure<String>> handleTheaterNotExist(){
+		ResponseStructure<String> rs = new ResponseStructure<String>();
+		rs.setStatuscode(HttpStatus.NOT_FOUND.value());
+		rs.setMessage("Theater is not  Exist...");
+		rs.setData("");
+		
+		return new ResponseEntity<ResponseStructure<String>>(rs,HttpStatus.NOT_FOUND);
+	}
+	
+//	movies
+	
+	@ExceptionHandler(MovieAlreadyExistException.class)
+	public ResponseEntity<ResponseStructure<String>> handleMovieAlreadyExist(){
+		ResponseStructure<String> rs = new ResponseStructure<String>();
+		rs.setStatuscode(HttpStatus.CONFLICT.value());
+		rs.setMessage("Movie already  Exist...");
+		rs.setData("");
+		
+		return new ResponseEntity<ResponseStructure<String>>(rs,HttpStatus.CONFLICT);
+	}
+	
+	@ExceptionHandler(MovieNotExistException.class)
+	public ResponseEntity<ResponseStructure<String>> handleMovieNotExist(){
+		ResponseStructure<String> rs = new ResponseStructure<String>();
+		rs.setStatuscode(HttpStatus.NOT_FOUND.value());
+		rs.setMessage("Movie is not  Exist...");
+		rs.setData("");
+		
+		return new ResponseEntity<ResponseStructure<String>>(rs,HttpStatus.NOT_FOUND);
+	}
 
 }
