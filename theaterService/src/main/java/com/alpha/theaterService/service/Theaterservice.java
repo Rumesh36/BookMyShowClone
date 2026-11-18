@@ -1,6 +1,7 @@
 package com.alpha.theaterService.service;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,18 +9,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.alpha.theaterService.dto.CreateShowdto;
 import com.alpha.theaterService.dto.CreateTheaterDto;
 import com.alpha.theaterService.dto.ResponseStructure;
+import com.alpha.theaterService.dto.UpdateShowDto;
+import com.alpha.theaterService.entity.Movie;
+import com.alpha.theaterService.entity.Show;
 import com.alpha.theaterService.entity.Theater;
+import com.alpha.theaterService.exception.MovieNotExistException;
+import com.alpha.theaterService.exception.ShowAlreadyExistException;
+import com.alpha.theaterService.exception.ShowNotExistException;
 import com.alpha.theaterService.exception.TheaterAlreadyExistWithContactException;
 import com.alpha.theaterService.exception.TheaterNotExistException;
+import com.alpha.theaterService.repository.AdminRepository;
+import com.alpha.theaterService.repository.ShowRepository;
 import com.alpha.theaterService.repository.TheaterRepository;
 
 @Service
 public class Theaterservice {
 	 @Autowired
-	    private TheaterRepository theaterRepo;
+	    private TheaterRepository theaterRepo; 
+	 @Autowired
+	 private ShowRepository showrepo;
+	 @Autowired
+	 private AdminRepository adminrepo;
 
+//	 create theater
 	    public ResponseEntity<ResponseStructure<Theater>> createTheaterAccount(CreateTheaterDto createTheaterDto) {
 
 	        Optional<Theater> theaterOptional =
@@ -84,11 +99,145 @@ public class Theaterservice {
 				ResponseStructure<Theater> rs = new ResponseStructure<Theater>();
 				rs.setStatuscode(HttpStatus.OK.value());
 		        rs.setMessage("MOVIE DELETED SUCCESSFULLY");
-		        rs.setData(theater);
+		        rs.setData(null);
 
 		        return new ResponseEntity<>(rs, HttpStatus.OK);
 			}
 			throw new TheaterNotExistException("theater not exist..");
 		}
+
+//		create shows..
+		public ResponseEntity<ResponseStructure<Show>> createShow(long id, CreateShowdto t) {
+
+		    // 1. Find theater by ID
+		    Optional<Theater> optionaltheater = theaterRepo.findById(id);
+
+		    if (!optionaltheater.isPresent()) {
+		        throw new TheaterNotExistException("theater not exist exception..");
+		    }
+
+		    Theater theater = optionaltheater.get();
+
+		    // 2. Check whether show already exists
+		    boolean exists = showrepo.existsByDateAndTimeAndScreennumberAndTheater(
+		            t.getDate(),
+		            t.getTime(),
+		            t.getScreenno(),
+		            theater
+		    );
+
+		    if (exists) {
+		        throw new ShowAlreadyExistException("Show already exists..");
+		    }
+
+		    // 3. Create new Show
+		    Show show = new Show();
+
+		    show.setTitle(t.getTitle());
+		    show.setDescription(t.getDescription());
+		    show.setDate(t.getDate());
+		    show.setTime(t.getTime());
+		    show.setLanguage(t.getLanguage());
+		    show.setDuration(t.getDuration());
+		    show.setScreennumber(t.getScreenno());
+
+		    // 4. Find movie by ID
+			    Optional<Movie> movieOptional = adminrepo.findById(t.getMovieid());
+
+		    if (!movieOptional.isPresent()) {
+		        throw new MovieNotExistException("Movie not found..");
+		    }
+
+		    Movie movie = movieOptional.get();
+
+		    // 5. Set movie and theater
+		    show.setMovie(movie);
+		    show.setTheater(theater);
+
+		    // 6. Add show to theater
+		    theater.getOnplayingShows().add(show);
+
+		    // 7. Save show
+		    Show savedShow = showrepo.save(show);
+
+		    // 8. Prepare response
+		    ResponseStructure<Show> rs = new ResponseStructure<>();
+
+		    rs.setStatuscode(HttpStatus.CREATED.value());
+		    rs.setMessage("NEW SHOW CREATED SUCCESSFULLY");
+		    rs.setData(savedShow);
+
+		    return new ResponseEntity<>(rs, HttpStatus.CREATED);
+		    
+	     	}
+		
+//		find all showss
+
+		public ResponseEntity<ResponseStructure<List<Show>>> findAllShows(Long id) {
+			
+		    Optional<Theater> optionalTheater = theaterRepo.findById(id);
+
+		    
+		    if (optionalTheater.isEmpty()) {
+		        throw new TheaterNotExistException("theater not exist");
+		    }
+		    
+		    Theater theater = optionalTheater.get();
+		    List<Show> allshows = showrepo.findByTheater(theater);
+		    ResponseStructure<List<Show>> rs = new ResponseStructure<>();
+		    
+		    rs.setStatuscode(HttpStatus.FOUND.value());
+			rs.setMessage("All Shows Fetched Sucessfully");
+			rs.setData(allshows);
+			return new ResponseEntity<ResponseStructure<List<Show>>>(rs,HttpStatus.FOUND);
+			
+		   }
+
+		public ResponseEntity<ResponseStructure<Show>> findShowsById(Long id) {
+			Optional<Show> optShow = showrepo.findById(id);
+			if(!optShow.isPresent()) {
+				throw new ShowNotExistException("show not exists...");
+			}
+			Show show = optShow.get();
+			ResponseStructure<Show> rs = new ResponseStructure<Show>();
+			rs.setStatuscode(HttpStatus.FOUND.value());
+			rs.setMessage("Show fetched succesfulyy...");
+			rs.setData(show);
+			return new ResponseEntity<ResponseStructure<Show>>(rs,HttpStatus.FOUND);
+		}
+
+		public ResponseEntity<ResponseStructure<Show>> updateShowById(long id, UpdateShowDto t) {
+		 
+			Optional<Show> optionalShow = showrepo.findById(id);
+			if(!optionalShow.isPresent()) {
+				throw new ShowNotExistException("show not exist exception");
+			}
+			
+			Show updatedShow = new Show();
+			updatedShow.setTime(t.getTime());
+			updatedShow.setDate(t.getDate());
+			updatedShow.setScreennumber(t.getScreenno());
+			
+			showrepo.save(updatedShow);
+			ResponseStructure<Show> rs = new ResponseStructure<Show>();
+			rs.setStatuscode(HttpStatus.OK.value());
+			rs.setMessage("data updated successfully..");
+			rs.setData(updatedShow);
+			return new ResponseEntity<ResponseStructure<Show>>(rs,HttpStatus.OK);
+	     	}
+
+		public ResponseEntity<ResponseStructure<Movie>> findMovieByName(String name) {
+			
+			Optional<Movie> movieopt = adminrepo.findByTitle(name);
+			if(!movieopt.isPresent()) {
+				throw new MovieNotExistException("Movie is not found..");
+			}
+			Movie movie = movieopt.get();
+			ResponseStructure<Movie> rs = new ResponseStructure<Movie>();
+			rs.setStatuscode(HttpStatus.OK.value());
+			rs.setMessage("Movie fetched successfully..");
+			rs.setData(movie);
+			return new ResponseEntity<ResponseStructure<Movie>>(rs,HttpStatus.FOUND);
+	     	}
 		}
 

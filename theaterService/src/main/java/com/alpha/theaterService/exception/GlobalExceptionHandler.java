@@ -50,5 +50,25 @@ public class GlobalExceptionHandler {
 		
 		return new ResponseEntity<ResponseStructure<String>>(rs,HttpStatus.NOT_FOUND);
 	}
+	
+	@ExceptionHandler(ShowAlreadyExistException.class)
+	public ResponseEntity<ResponseStructure<String>> handleShowAlreadyExist(){
+		ResponseStructure<String> rs = new ResponseStructure<String>();
+		rs.setStatuscode(HttpStatus.CONFLICT.value());
+		rs.setMessage("Show already  Exist...");
+		rs.setData("");
+		
+		return new ResponseEntity<ResponseStructure<String>>(rs,HttpStatus.CONFLICT);
+	}
+	
+	@ExceptionHandler(ShowNotExistException.class)
+	public ResponseEntity<ResponseStructure<String>> handleShowNotExist(){
+		ResponseStructure<String> rs = new ResponseStructure<String>();
+		rs.setStatuscode(HttpStatus.NOT_FOUND.value());
+		rs.setMessage("show is not  Exist...");
+		rs.setData("");
+		
+		return new ResponseEntity<ResponseStructure<String>>(rs,HttpStatus.NOT_FOUND);
+	}
 
 }

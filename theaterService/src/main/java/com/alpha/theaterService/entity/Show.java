@@ -1,5 +1,9 @@
 package com.alpha.theaterService.entity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,14 +23,19 @@ public class Show {
 	private String language;
 	private int screennumber;
 	
+	private LocalDate date;
+	private LocalTime time;
+//	private int price;
 	@ManyToOne
 	private Movie movie ;
+	@ManyToOne
+	private Theater theater;
 	
 	public Show() {
 		super();
 	}
 
-	public Show(Movie movie, String title, String description, double duration, String language, int screennumber) {
+	public Show(Movie movie, String title, String description, double duration, String language, int screennumber, LocalDate date,LocalTime time,Theater theater,int price) {
 		super();
 		this.movie = movie;
 		this.title = title;
@@ -34,6 +43,10 @@ public class Show {
 		this.duration = duration;
 		this.language = language;
 		this.screennumber = screennumber;
+		this.date=date;
+		this.time=time;
+		this.theater=theater;
+//		this.price=price;
 	}
 
 	public long getId() {
@@ -91,6 +104,38 @@ public class Show {
 	public void setScreennumber(int screennumber) {
 		this.screennumber = screennumber;
 	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+
+	public LocalTime getTime() {
+		return time;
+	}
+
+	public void setTime(LocalTime time) {
+		this.time = time;
+	}
+
+	public Theater getTheater() {
+		return theater;
+	}
+
+	public void setTheater(Theater theater) {
+		this.theater = theater;
+	}
+
+//	public int getPrice() {
+//		return price;
+//	}
+//
+//	public void setPrice(int price) {
+//		this.price = price;
+//	}
 	
 	
 }

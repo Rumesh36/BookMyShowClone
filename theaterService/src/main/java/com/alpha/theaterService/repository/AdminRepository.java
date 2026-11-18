@@ -12,4 +12,6 @@ public interface AdminRepository extends JpaRepository<Movie,Long>{
 
 	Optional<Movie> findByTitleIgnoreCase(String title);
 
+	Optional<Movie> findByTitle(String name);
+
 }

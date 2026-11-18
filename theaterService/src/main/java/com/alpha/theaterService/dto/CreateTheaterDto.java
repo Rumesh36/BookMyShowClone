@@ -72,4 +72,6 @@ public class CreateTheaterDto {
     public void setAddress(Adress address) {
         this.address = address;
     }
+
+
 }
