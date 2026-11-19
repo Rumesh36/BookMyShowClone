@@ -1,5 +1,6 @@
 package com.alpha.theaterService.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,11 @@ public class AppController {
     @GetMapping("/customer/findmovie")
     public ResponseEntity<ResponseStructure<Movie>> findMovieByName(@RequestParam String name){
     	return tser.findMovieByName(name);
+    }
+    
+    @GetMapping("/customer/buytickets")
+    public ResponseEntity<ResponseStructure<List<Show>>> buytickets(@RequestParam String moviename,@RequestParam String language,@RequestParam LocalDate date){
+    	return tser.buyTickets(moviename,language, date);
     }
     
 }

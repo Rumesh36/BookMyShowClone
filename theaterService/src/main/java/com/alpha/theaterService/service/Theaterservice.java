@@ -1,6 +1,7 @@
 package com.alpha.theaterService.service;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -228,7 +229,7 @@ public class Theaterservice {
 
 		public ResponseEntity<ResponseStructure<Movie>> findMovieByName(String name) {
 			
-			Optional<Movie> movieopt = adminrepo.findByTitle(name);
+			Optional<Movie> movieopt = adminrepo.findByTitleIgnoreCase(name);
 			if(!movieopt.isPresent()) {
 				throw new MovieNotExistException("Movie is not found..");
 			}
@@ -239,5 +240,21 @@ public class Theaterservice {
 			rs.setData(movie);
 			return new ResponseEntity<ResponseStructure<Movie>>(rs,HttpStatus.FOUND);
 	     	}
+
+//find the list of shoes		
+		public ResponseEntity<ResponseStructure<List<Show>>> buyTickets(
+		        String moviename, String language, LocalDate date) {
+
+		    List<Show> shows = showrepo
+		            .findByTitleContainingIgnoreCaseAndLanguageIgnoreCaseAndDate(
+		                    moviename, language, date);
+
+		    ResponseStructure<List<Show>> response = new ResponseStructure<>();
+		    response.setStatuscode(HttpStatus.OK.value());
+		    response.setMessage("AVAILABLE SHOWS");
+		    response.setData(shows);
+
+		    return new ResponseEntity<>(response, HttpStatus.OK);
+		}
 		}
 
