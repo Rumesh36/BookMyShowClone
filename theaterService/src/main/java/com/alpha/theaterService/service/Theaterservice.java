@@ -2,6 +2,7 @@ package com.alpha.theaterService.service;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import com.alpha.theaterService.dto.CreateTheaterDto;
 import com.alpha.theaterService.dto.ResponseStructure;
 import com.alpha.theaterService.dto.UpdateShowDto;
 import com.alpha.theaterService.entity.Movie;
+import com.alpha.theaterService.entity.Seat;
 import com.alpha.theaterService.entity.Show;
 import com.alpha.theaterService.entity.Theater;
 import com.alpha.theaterService.exception.MovieNotExistException;
@@ -34,6 +36,9 @@ public class Theaterservice {
 	 private ShowRepository showrepo;
 	 @Autowired
 	 private AdminRepository adminrepo;
+	 
+	 @Autowired
+	 private SeatRepository seatRepo;
 
 //	 create theater
 	    public ResponseEntity<ResponseStructure<Theater>> createTheaterAccount(CreateTheaterDto createTheaterDto) {
@@ -133,7 +138,7 @@ public class Theaterservice {
 
 		    // 3. Create new Show
 		    Show show = new Show();
-
+		    
 		    show.setTitle(t.getTitle());
 		    show.setDescription(t.getDescription());
 		    show.setDate(t.getDate());
@@ -141,6 +146,11 @@ public class Theaterservice {
 		    show.setLanguage(t.getLanguage());
 		    show.setDuration(t.getDuration());
 		    show.setScreennumber(t.getScreenno());
+		    show.setPrice(t.getPrice());
+		    
+		    //to add list of seats
+		    List<Seat> seats = generateSeats(t.getCapacity(), show);
+		    show.setSeats(seats);
 
 		    // 4. Find movie by ID
 			    Optional<Movie> movieOptional = adminrepo.findById(t.getMovieid());
@@ -171,6 +181,35 @@ public class Theaterservice {
 		    return new ResponseEntity<>(rs, HttpStatus.CREATED);
 		    
 	     	}
+		
+//		generate seats function
+		public List<Seat> generateSeats(int capacity,Show show){
+			 if (capacity <= 0 ) {
+			        throw new IllegalArgumentException(
+			                "Capacity must be a positive");
+			    }
+			    List<Seat> seats = new ArrayList<>();
+			    int catCapacity = capacity / 3;
+			    int rows = catCapacity / 10;
+			    String[] categories = {"SILVER", "GOLD", "DIAMOND"};
+			    char row = 'A';
+			    for (String category : categories) {
+			        for (int i = 1; i <= rows; i++) {
+			            for (int j = 1; j <= 10; j++) {
+			                Seat seat = new Seat();
+			                seat.setSeatno(row + String.valueOf(j));
+			                seat.setCategory(category);
+			                seat.setStatus("AVAILABLE");
+			                seat.setShow(show);
+			                seats.add(seat);
+			            }
+			            row++;
+			        }
+			    }
+			    return seats;
+		}
+		
+		
 		
 //		find all showss
 
@@ -227,21 +266,21 @@ public class Theaterservice {
 			return new ResponseEntity<ResponseStructure<Show>>(rs,HttpStatus.OK);
 	     	}
 
-		public ResponseEntity<ResponseStructure<Movie>> findMovieByName(String name) {
+		public ResponseEntity<ResponseStructure<List<Movie>>> findMovieByName(String name) {
 			
-			Optional<Movie> movieopt = adminrepo.findByTitleIgnoreCase(name);
-			if(!movieopt.isPresent()) {
-				throw new MovieNotExistException("Movie is not found..");
+			List<Movie> movie =adminrepo.findByTitleContainsIgnoreCase(name);
+			if(movie.isEmpty()) {
+				throw new MovieNotExistException("movie not exist.");
 			}
-			Movie movie = movieopt.get();
-			ResponseStructure<Movie> rs = new ResponseStructure<Movie>();
+			ResponseStructure<List<Movie>> rs = new ResponseStructure<>();
 			rs.setStatuscode(HttpStatus.OK.value());
 			rs.setMessage("Movie fetched successfully..");
 			rs.setData(movie);
-			return new ResponseEntity<ResponseStructure<Movie>>(rs,HttpStatus.FOUND);
+			return new ResponseEntity<ResponseStructure<List<Movie>>>(rs,HttpStatus.OK);
+			
 	     	}
 
-//find the list of shoes		
+//find the list of shows		
 		public ResponseEntity<ResponseStructure<List<Show>>> buyTickets(
 		        String moviename, String language, LocalDate date) {
 
@@ -256,5 +295,28 @@ public class Theaterservice {
 
 		    return new ResponseEntity<>(response, HttpStatus.OK);
 		}
+
+//		to find all available seats..
+		public ResponseEntity<ResponseStructure<List<Seat>>> findAvailableSeats(long id, String string) {
+			  if (!showrepo.existsById(id)) {
+		            throw new ShowNotExistException("SHOW NOT FOUND");
+		        }
+			  
+			  List<Seat> seats = seatRepo.findByShow_IdAndStatus(id, "AVAILABLE");
+			  ResponseStructure<List<Seat>> rs = new ResponseStructure<List<Seat>>();
+			  if(seats.isEmpty()) {
+				  rs.setStatuscode(HttpStatus.FOUND.value());
+				  rs.setMessage("No seats Available");
+				  rs.setData(seats);
+				  return new ResponseEntity<ResponseStructure<List<Seat>>>(
+			                rs, HttpStatus.NOT_FOUND);
+			  }
+			  
+			  rs.setStatuscode(HttpStatus.OK.value());
+			    rs.setMessage("Available seats fetched successfully");
+			    rs.setData(seats);
+
+			    return new ResponseEntity<>(rs, HttpStatus.OK);
+	     	}
 		}
 

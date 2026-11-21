@@ -18,12 +18,13 @@ import com.alpha.theaterService.dto.CreateTheaterDto;
 import com.alpha.theaterService.dto.ResponseStructure;
 import com.alpha.theaterService.dto.UpdateShowDto;
 import com.alpha.theaterService.entity.Movie;
+import com.alpha.theaterService.entity.Seat;
 import com.alpha.theaterService.entity.Show;
 import com.alpha.theaterService.entity.Theater;
 import com.alpha.theaterService.service.AdminService;
 import com.alpha.theaterService.service.Theaterservice;
 @RestController
-public class AppController {
+public class TheaterController {
 
     @Autowired 
     private Theaterservice tser;
@@ -75,14 +76,19 @@ public class AppController {
     }
     
 //    customer to find movie
-    @GetMapping("/customer/findmovie")
-    public ResponseEntity<ResponseStructure<Movie>> findMovieByName(@RequestParam String name){
+    @GetMapping("findmovie")
+    public ResponseEntity<ResponseStructure<List<Movie>>> findMovieByName(@RequestParam String name){
     	return tser.findMovieByName(name);
     }
     
     @GetMapping("/customer/buytickets")
     public ResponseEntity<ResponseStructure<List<Show>>> buytickets(@RequestParam String moviename,@RequestParam String language,@RequestParam LocalDate date){
     	return tser.buyTickets(moviename,language, date);
+    }
+    
+    @GetMapping("/shows/seats/available")
+    public ResponseEntity<ResponseStructure<List<Seat>>> getAvailableSeats(@RequestParam long id) {
+        return tser. findAvailableSeats(id, "AVAILABLE");
     }
     
 }

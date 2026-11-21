@@ -1,5 +1,7 @@
 package com.alpha.customerService.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -8,14 +10,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.alpha.customerService.dto.CreateCustomerDto;
+import com.alpha.customerService.dto.MovieDto;
 import com.alpha.customerService.dto.ResponseStructure;
+import com.alpha.customerService.dto.SeatDto;
 import com.alpha.customerService.entity.Customer;
 import com.alpha.customerService.service.Customerservice;
 
+
 @RestController
-public class Appcontroller {
+public class CustomerController {
 
 	@Autowired
 	private Customerservice cs;
@@ -38,5 +44,16 @@ public class Appcontroller {
 		return cs.deleteCustomer(id);
 	}
 	
+	
+	 @GetMapping("/customer/findmovie")
+	    public  ResponseEntity<ResponseStructure<List<MovieDto>>> findMovieByName(@RequestParam String name){
+		 
+	    	return cs.findMovieByName(name);
+	    }
+	
+	 @GetMapping("/customer/shows/seats/available")
+	    public ResponseEntity<ResponseStructure<List<SeatDto>>> getAvailableSeats(@RequestParam long id) {
+	        return cs. findAvailableSeats(id, "AVAILABLE");
+	    }
 	
 }

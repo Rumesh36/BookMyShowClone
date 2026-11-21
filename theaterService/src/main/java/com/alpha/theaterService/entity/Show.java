@@ -3,12 +3,15 @@ package com.alpha.theaterService.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Show {
@@ -25,17 +28,20 @@ public class Show {
 	
 	private LocalDate date;
 	private LocalTime time;
-//	private int price;
+	private Double price;
 	@ManyToOne
 	private Movie movie ;
 	@ManyToOne
 	private Theater theater;
 	
+	@OneToMany(cascade =CascadeType.ALL)
+	private List<Seat> seats;
+	
 	public Show() {
 		super();
 	}
 
-	public Show(Movie movie, String title, String description, double duration, String language, int screennumber, LocalDate date,LocalTime time,Theater theater,int price) {
+	public Show(Movie movie, String title, String description, double duration, String language, int screennumber, LocalDate date,LocalTime time,Theater theater,Double price) {
 		super();
 		this.movie = movie;
 		this.title = title;
@@ -46,7 +52,7 @@ public class Show {
 		this.date=date;
 		this.time=time;
 		this.theater=theater;
-//		this.price=price;
+		this.price=price;
 	}
 
 	public long getId() {
@@ -129,13 +135,21 @@ public class Show {
 		this.theater = theater;
 	}
 
-//	public int getPrice() {
-//		return price;
-//	}
-//
-//	public void setPrice(int price) {
-//		this.price = price;
-//	}
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	public List<Seat> getSeats() {
+		return seats;
+	}
+
+	public void setSeats(List<Seat> seats) {
+		this.seats = seats;
+	}
 	
 	
 }

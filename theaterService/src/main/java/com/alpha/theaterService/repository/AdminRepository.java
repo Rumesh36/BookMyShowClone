@@ -1,5 +1,6 @@
 package com.alpha.theaterService.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,8 +11,8 @@ import com.alpha.theaterService.entity.Movie;
 @Repository
 public interface AdminRepository extends JpaRepository<Movie,Long>{
 
-	Optional<Movie> findByTitleIgnoreCase(String title);
+	List<Movie> findByTitleContainsIgnoreCase(String title);
 
-	Optional<Movie> findByTitle(String name);
+	Optional<Movie>findByTitleIgnoreCase(String name);
 
 }

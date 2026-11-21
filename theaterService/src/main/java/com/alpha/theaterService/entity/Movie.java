@@ -54,7 +54,7 @@ public class Movie {
 		this.description = description;
 	}
 
-	public String getCast() {
+	public String getMovieCast() {
 		return moviecast;
 	}
 

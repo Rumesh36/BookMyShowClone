@@ -2,6 +2,9 @@ package com.alpha.theaterService.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+
+import com.alpha.theaterService.entity.Seat;
 public class CreateShowdto {
 
 	private String title;
@@ -12,7 +15,8 @@ public class CreateShowdto {
 	private double duration;
 	private int screenno;
 	private Long movieid;
-	private int price;
+	private Double price;
+	private int capacity;
 	
 	public String getTitle() {
 		return title;
@@ -62,11 +66,18 @@ public class CreateShowdto {
 	public void setMovieid(Long movieid) {
 		this.movieid = movieid;
 	}
-	public int getPrice() {
+	public Double getPrice() {
 		return price;
 	}
-	public void setPrice(int price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
+	public int getCapacity() {
+		return capacity;
+	}
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+	}
+	
 	
 }

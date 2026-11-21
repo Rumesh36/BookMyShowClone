@@ -1,16 +1,22 @@
 package com.alpha.customerService.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 import com.alpha.customerService.dto.CreateCustomerDto;
+import com.alpha.customerService.dto.MovieDto;
 import com.alpha.customerService.dto.ResponseStructure;
+import com.alpha.customerService.dto.SeatDto;
 import com.alpha.customerService.entity.Customer;
 import com.alpha.customerService.exception.CustomerAlreadyExistException;
 import com.alpha.customerService.exception.CustomerNotExistException;
@@ -87,5 +93,41 @@ public class Customerservice {
 		}
 		throw new CustomerNotExistException("customer not exist..");
 	    
+	}
+
+	@Autowired    
+	private RestTemplate restTemplate;
+	
+	
+//	list of movies from theater service
+	public  ResponseEntity<ResponseStructure<List<MovieDto>>>findMovieByName(String name) {
+		String url="http://localhost:8080/findmovie?name="+name;
+
+	    ResponseEntity<ResponseStructure<List<MovieDto>>> response =
+	            restTemplate.exchange(
+	                    url,
+	                    HttpMethod.GET,
+	                    null,
+	                    new ParameterizedTypeReference<ResponseStructure<List<MovieDto>>>() {}
+	            );
+
+	    return response;
+	}
+	
+//	list of seats from theater sevice.
+
+	public ResponseEntity<ResponseStructure<List<SeatDto>>> findAvailableSeats(long id, String status) {
+
+	    String url = "http://localhost:8080/shows/seats/available?id=" + id;
+
+	    ResponseEntity<ResponseStructure<List<SeatDto>>> response =
+	            restTemplate.exchange(
+	                    url,
+	                    HttpMethod.GET,
+	                    null,
+	                    new ParameterizedTypeReference<ResponseStructure<List<SeatDto>>>() {}
+	            );
+
+	    return response;
 	}
 }
